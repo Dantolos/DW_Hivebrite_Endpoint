@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: This plugin registers a custom API endpoint for retrieving articles.
-Version: 1.0
+Version: 1.1
 Author: Dantolos
 Author URI: https://github.com/Dantolos/
 License: GPL2
