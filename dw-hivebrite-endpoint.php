@@ -6,6 +6,7 @@ Description: This plugin registers a custom API endpoint for retrieving articles
 Version: 1.0
 Author: Dantolos
 Author URI: https://github.com/Dantolos/
+License: GPL2
 */
 
 //CALLBACK DATA
