@@ -2,9 +2,9 @@
 /*
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
-Description: This plugin registers a custom API endpoint for retrieving articles.
-Version: 1.1
-Author: Dantolos
+Description: Custom API Endpoint, to prepare post data for Hivebrite.
+Version: 1.2
+Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
 */
@@ -46,7 +46,7 @@ function article_api($request) {
         $blocks = parse_blocks($post->post_content);
         $clearBlock = '';
 
-        
+        // LEAD einbinden
 
         foreach ( $blocks as $block ) {
             switch ($block['blockName']) {
@@ -89,9 +89,9 @@ function article_api($request) {
             'title' => $post->post_title,
             'featured_image' => get_the_post_thumbnail_url( $post->ID ),
             'content' => $css_string.$clearBlock,
-            'blocks' => $clearBlock,//TO DELETE
+            //'blocks' => $clearBlock,//TO DELETE
             'style' => $css_string//TO DELETE
-            //'raw' => parse_blocks($post->post_content), //TO DELETE
+            'raw' => parse_blocks($post->post_content), //TO DELETE
         );
     }
     return rest_ensure_response( $data );
@@ -116,3 +116,5 @@ add_action( 'rest_api_init', function () {
         ),
     ) );
 } );
+
+?>
