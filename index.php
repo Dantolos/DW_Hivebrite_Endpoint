@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.4
+Version: 1.5
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
@@ -69,8 +69,69 @@ function article_api($request) {
                 case 'core/image':
                     $imageURL = wp_get_attachment_image_url($block['attrs']['id']);
                     $clearBlock .= '<div class="dj-block-image">';
+                    $clearBlock .= '<img src="'.$imageURL.'" />';
+                    $clearBlock .= '</div>';
+                    break;
+
+                //List
+                case 'core/list':
+                    $clearBlock .= '<div class="dj-block-list">';
                     $clearBlock .= $imageURL;
                     $clearBlock .= '</div>';
+                    break;
+
+                //Separator
+                case 'core/separator':
+                    $clearBlock .= '<div class="dj-block-separator">';
+                    $clearBlock .= $imageURL;
+                    $clearBlock .= '</div>';
+                    break;
+
+
+                //Teaser
+                case 'alzheimer/teaser':
+                    //$clearBlock .= '<div class="dj-block-teaser">';
+                    //$clearBlock .= $block['innerHTML'];
+                    //$clearBlock .= '</div>';
+                    $clearBlock .= '';
+                    break;
+
+                //Filet
+                case 'alzheimer/filet':
+                    $clearBlock .= '<div class="dj-block-filet">';
+                    $clearBlock .= $block['innerHTML'];
+                    $clearBlock .= '</div>';
+                    break;
+
+                //Quote
+                case 'alzheimer/quote':
+                    $clearBlock .= '<div class="dj-block-quote">';
+                    $clearBlock .= $block['innerHTML'];
+                    $clearBlock .= '</div>';
+                    break;
+
+                //Call to Action
+                case 'alzheimer/calltoaction':
+                    $clearBlock .= '<div class="dj-block-cta">';
+                    $clearBlock .= $block['innerHTML'];
+                    $clearBlock .= '</div>';
+                    break;
+
+                //Wiki Teaser
+                case 'demenzwiki/teaser':
+                    $clearBlock .= '<div class="dj-block-dw-teaser">';
+                    $clearBlock .= render_block( $block );
+                    $clearBlock .= '</div>';
+                    break;
+
+                //Newsletter
+                case 'alzheimer/newsletter':
+                    $clearBlock .= '';
+                    break;
+
+                //Fundraising
+                case 'alzheimer/fundraising':
+                    $clearBlock .= '';
                     break;
                 
                 default:

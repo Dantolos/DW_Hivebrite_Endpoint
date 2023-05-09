@@ -1,3 +1,4 @@
+p { font-size:1.2em !important;   }
 .dj-block-heading {
     color:inherit;
 }
@@ -6,4 +7,24 @@
 }
 .dj-block-image {
      color:inherit;
+}
+.filet {
+    margin-left: -20px;
+
+}
+.filet > p {
+    font-weight:600;
+    font-size:1.8em !important;
+    color: #170056;
+
+}
+.quote {
+    padding: 20px !important;
+    border: 0  !important;
+    font-size: 1.4em !important;
+
+    margin-left: 0px !important;
+    border-radius: 20px;
+    background-color: rgba(23,0,86,.05);
+    color: rgb(23,0,86);
 }
