@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.3
+Version: 1.4
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
@@ -90,7 +90,7 @@ function article_api($request) {
             'featured_image' => get_the_post_thumbnail_url( $post->ID ),
             'content' => $css_string.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
-            'style' => $css_string//TO DELETE
+            'style' => $css_string,//TO DELETE
             'raw' => parse_blocks($post->post_content), //TO DELETE
         );
     }
