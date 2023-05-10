@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.75
+Version: 1.76
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
@@ -79,14 +79,14 @@ function article_api($request) {
                 //List
                 case 'core/list':
                     $clearBlock .= '<div class="dj-block-list">';
-                    $clearBlock .= $imageURL;
+                    $clearBlock .= $block['innerHTML'];
                     $clearBlock .= '</div>';
                     break;
 
                 //Separator
                 case 'core/separator':
                     $clearBlock .= '<div class="dj-block-separator">';
-                    $clearBlock .= $imageURL;
+                    $clearBlock .= $block['innerHTML'];
                     $clearBlock .= '</div>';
                     break;
 
@@ -141,8 +141,7 @@ function article_api($request) {
                 
                 default:
                     $clearBlock .= $block['innerHTML'];
-                    break;
-                    
+                    break;    
             }
         }
 
