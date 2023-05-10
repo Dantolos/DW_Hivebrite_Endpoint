@@ -3,11 +3,14 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.76
+Version: 1.77
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
 */
+
+
+//https://demenzjournal.com/?wppusher-hook&token=4cfea2921a6b126277f559783717d280e1917fed420c0e48d84cc12b791de732&package=RFdfSGl2ZWJyaXRlX0VuZHBvaW50L2luZGV4LnBocA==
 
 //CALLBACK DATA
 function article_api($request) {
@@ -51,11 +54,14 @@ function article_api($request) {
 
         $teaser = '';
 
+        $alternativeRender = $post->post_content;
+
         foreach ( $blocks as $block ) {
             switch ($block['blockName']) {
 
                 //Heading
                 case 'core/heading':
+                    
                     $clearBlock .= '<div class="dj-block-heading">';
                     $clearBlock .= $block['innerHTML'];
                     $clearBlock .= '</div>';
@@ -70,6 +76,7 @@ function article_api($request) {
                     
                 //Bilder
                 case 'core/image':
+                    
                     $imageURL = wp_get_attachment_image_url($block['attrs']['id']);
                     $clearBlock .= '<div class="dj-block-image">';
                     $clearBlock .= '<img src="'.$imageURL.'" />';
@@ -124,7 +131,7 @@ function article_api($request) {
                 case 'demenzwiki/teaser':
                     $teaser = render_block( $block );
                     $clearBlock .= '<div class="dj-block-dw-teaser">';
-                    $clearBlock .= render_block( $block );
+                    $clearBlock .= $teaser;
                     $clearBlock .= '</div>';
                     
                     break;
@@ -140,6 +147,7 @@ function article_api($request) {
                     break;
                 
                 default:
+                $teaser = render_block($block);
                     $clearBlock .= $block['innerHTML'];
                     break;    
             }
@@ -157,7 +165,8 @@ function article_api($request) {
             'content' => $css_string.$lead.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
             'style' => $css_string,//TO DELETE
-            'raw' => parse_blocks($post->post_content), //TO DELETE
+            //'raw' => parse_blocks($post->post_content), //TO DELETE
+            'alternative' => $css_string.$lead.$alternativeRender
         );
     }
     return rest_ensure_response( $data );
