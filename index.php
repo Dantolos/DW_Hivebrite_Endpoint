@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.77
+Version: 1.78
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
@@ -76,8 +76,7 @@ function article_api($request) {
                     
                 //Bilder
                 case 'core/image':
-                    
-                    $imageURL = wp_get_attachment_image_url($block['attrs']['id']);
+                    $imageURL = wp_get_attachment_image_url($block['attrs']['id'] );
                     $clearBlock .= '<div class="dj-block-image">';
                     $clearBlock .= '<img src="'.$imageURL.'" />';
                     $clearBlock .= '</div>';
@@ -155,13 +154,18 @@ function article_api($request) {
 
         $updated = the_date($post->ID);
 
+        $thumbnail_id = get_post_thumbnail_id( $post->ID ); // Abrufen der ID des Thumbnail-Bildes
+        $thumbnail_size = 'medium_large'; // Hier den Namen der benutzerdefinierten Bildgröße angeben
+        $thumbnail_url = wp_get_attachment_image_src( $thumbnail_id, $thumbnail_size ); 
+        $featured_image = ( is_array($thumbnail_url) ) ? $thumbnail_url[0] : wp_get_attachment_image_src( $thumbnail_id );
+
         $data[] = array(
             'id' => $post->ID,
             'published' => $published,
             'updated' => $updated,
             'title' => $post->post_title,
             'teaser' => $teaser,
-            'featured_image' => get_the_post_thumbnail_url( $post->ID ),
+            'featured_image' => $featured_image,
             'content' => $css_string.$lead.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
             'style' => $css_string,//TO DELETE
