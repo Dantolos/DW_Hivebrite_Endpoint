@@ -3,11 +3,15 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.79
+Version: 1.80
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 
 //https://demenzjournal.com/?wppusher-hook&token=4cfea2921a6b126277f559783717d280e1917fed420c0e48d84cc12b791de732&package=RFdfSGl2ZWJyaXRlX0VuZHBvaW50L2luZGV4LnBocA==
@@ -16,13 +20,18 @@ License: GPL2
 function article_api($request) {
     $after = $request->get_param( 'after' );
     $before = $request->get_param( 'before' );
-
+    //specificid
+    $spezid = isset($_GET['id']) ? explode(",", $_GET['id']) : array();
+    
     //stylesheet
     $css_file_path = __DIR__.'/style.css';
     $css_string = '<style>'.file_get_contents($css_file_path).'</style>';
 
+    
+
     //query
     $args = array(
+        'post__in'=> $spezid,
         'post_type' => 'post',
         'posts_per_page' => isset($_GET['per_page']) ? $_GET['per_page'] : -1, // Add per_page parameter
         'paged' => isset($_GET['page']) ? $_GET['page'] : 1, 
@@ -158,6 +167,7 @@ function article_api($request) {
         $thumbnail_size = 'medium_large'; // Hier den Namen der benutzerdefinierten Bildgröße angeben
         $thumbnail_url = wp_get_attachment_image_src( $thumbnail_id, $thumbnail_size ); 
         $featured_image = ( is_array($thumbnail_url) ) ? $thumbnail_url[0] : wp_get_attachment_image_src( $thumbnail_id );
+  
 
         $data[] = array(
             'id' => $post->ID,
