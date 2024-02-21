@@ -3,16 +3,19 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.80
+Version: 1.82
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
 */
 
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+require_once(  plugin_dir_path(__FILE__) . '/generate-html.php');     
+use DW as DW_HTML;
 
 //https://demenzjournal.com/?wppusher-hook&token=4cfea2921a6b126277f559783717d280e1917fed420c0e48d84cc12b791de732&package=RFdfSGl2ZWJyaXRlX0VuZHBvaW50L2luZGV4LnBocA==
 
@@ -20,14 +23,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 function article_api($request) {
     $after = $request->get_param( 'after' );
     $before = $request->get_param( 'before' );
+    
     //specificid
-    $spezid = isset($_GET['id']) ? explode(",", $_GET['id']) : array();
+    $spezid = isset($_GET['id']) ? explode(",", $_GET['id']) : array(); // if specific id is given in params
     
     //stylesheet
     $css_file_path = __DIR__.'/style.css';
     $css_string = '<style>'.file_get_contents($css_file_path).'</style>';
 
-    
+    //categorie
+    $parentCategorie = 'wissensbox';
+    $categorie = $request->get_param( 'cat' ) ?: null;
 
     //query
     $args = array(
@@ -35,14 +41,22 @@ function article_api($request) {
         'post_type' => 'post',
         'posts_per_page' => isset($_GET['per_page']) ? $_GET['per_page'] : -1, // Add per_page parameter
         'paged' => isset($_GET['page']) ? $_GET['page'] : 1, 
+        'tax_query' => array( //just get posts with "wissensbox"
+            array(
+                'taxonomy' => 'category', 
+                'field'    => 'slug',
+                'terms'    => $parentCategorie, 
+            ),
+        ),
         'date_query' => array(
             array(
                 'after' => $after ? $after : '',
                 //'before' => $before ? $before : 'today',
                 'inclusive' => true,
             ),
-        ),
+        ), 
     );
+    
 
     $query = new WP_Query( $args );
     $posts = $query->get_posts();
@@ -54,6 +68,19 @@ function article_api($request) {
         $updated = str_replace( ' ', 'T', $post->post_date);
       
         
+        //Category
+        $allCategories = wp_get_object_terms( $post->ID, 'category' );
+        $subCat = null;
+        foreach($allCategories as $category){
+            if($category->parent != 0){
+                $parentCat = get_term_by('id', $category->parent, 'category');
+                if($parentCat->slug == $parentCategorie){
+                    $subCat = $category->slug; 
+                }
+            } 
+        }
+        if( is_null($subCat) || $categorie != $subCat ) continue;
+
         //if(get_field('', $post->ID) == false){ continue; }
         $blocks = parse_blocks($post->post_content);
         $clearBlock = '';
@@ -66,99 +93,8 @@ function article_api($request) {
         $alternativeRender = $post->post_content;
 
         foreach ( $blocks as $block ) {
-            switch ($block['blockName']) {
-
-                //Heading
-                case 'core/heading':
-                    
-                    $clearBlock .= '<div class="dj-block-heading">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-                //Paragraph
-                case 'core/paragraph':
-                    $clearBlock .= '<div class="dj-block-paragraph">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-                    
-                //Bilder
-                case 'core/image':
-                    $imageURL = wp_get_attachment_image_url($block['attrs']['id'] );
-                    $clearBlock .= '<div class="dj-block-image">';
-                    $clearBlock .= '<img src="'.$imageURL.'" />';
-                    $clearBlock .= '</div>';
-                    break;
-
-                //List
-                case 'core/list':
-                    $clearBlock .= '<div class="dj-block-list">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-                //Separator
-                case 'core/separator':
-                    $clearBlock .= '<div class="dj-block-separator">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-
-                //Teaser
-                case 'alzheimer/teaser':
-                    //$clearBlock .= '<div class="dj-block-teaser">';
-                    //$clearBlock .= $block['innerHTML'];
-                    //$clearBlock .= '</div>';
-                    $clearBlock .= '';
-                    break;
-
-                //Filet
-                case 'alzheimer/filet':
-                    $clearBlock .= '<div class="dj-block-filet">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-                //Quote
-                case 'alzheimer/quote':
-                    $clearBlock .= '<div class="dj-block-quote">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-                //Call to Action
-                case 'alzheimer/calltoaction':
-                    $clearBlock .= '<div class="dj-block-cta">';
-                    $clearBlock .= $block['innerHTML'];
-                    $clearBlock .= '</div>';
-                    break;
-
-                //Wiki Teaser
-                case 'demenzwiki/teaser':
-                    $teaser = render_block( $block );
-                    $clearBlock .= '<div class="dj-block-dw-teaser">';
-                    $clearBlock .= $teaser;
-                    $clearBlock .= '</div>';
-                    
-                    break;
-
-                //Newsletter
-                case 'alzheimer/newsletter':
-                    $clearBlock .= '';
-                    break;
-
-                //Fundraising
-                case 'alzheimer/fundraising':
-                    $clearBlock .= '';
-                    break;
-                
-                default:
-                $teaser = render_block($block);
-                    $clearBlock .= $block['innerHTML'];
-                    break;    
-            }
+           $blockHTML = new DW_HTML\generate_html($block);
+           $clearBlock .= $blockHTML->htmlBlock; 
         }
 
         $updated = the_date($post->ID);
@@ -169,6 +105,7 @@ function article_api($request) {
         $featured_image = ( is_array($thumbnail_url) ) ? $thumbnail_url[0] : wp_get_attachment_image_src( $thumbnail_id );
   
 
+
         $data[] = array(
             'id' => $post->ID,
             'published' => $published,
@@ -176,7 +113,8 @@ function article_api($request) {
             'title' => $post->post_title,
             'teaser' => $teaser,
             'featured_image' => $featured_image,
-            //'content' => $css_string.$lead.$clearBlock,
+            'category' => $subCat,
+            'content' => $css_string.$lead.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
             'style' => $css_string,//TO DELETE
             //'raw' => parse_blocks($post->post_content), //TO DELETE
