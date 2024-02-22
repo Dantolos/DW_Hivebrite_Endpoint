@@ -3,7 +3,7 @@
 Plugin Name: DW Hivebrite Endpoint
 Plugin URI: https://github.com/Dantolos/DW_Hivebrite_Endpoint
 Description: Custom API Endpoint, to prepare post data for Hivebrite.
-Version: 1.82
+Version: 1.84
 Author: Aaron Giaimo
 Author URI: https://github.com/Dantolos/
 License: GPL2
@@ -56,8 +56,7 @@ function article_api($request) {
             ),
         ), 
     );
-    
-
+     
     $query = new WP_Query( $args );
     $posts = $query->get_posts();
 
@@ -66,11 +65,11 @@ function article_api($request) {
     foreach ( $posts as $post ) {
         $published = str_replace( ' ', 'T', $post->post_date);
         $updated = str_replace( ' ', 'T', $post->post_date);
-      
-        
+       
         //Category
         $allCategories = wp_get_object_terms( $post->ID, 'category' );
         $subCat = null;
+        
         foreach($allCategories as $category){
             if($category->parent != 0){
                 $parentCat = get_term_by('id', $category->parent, 'category');
@@ -79,9 +78,10 @@ function article_api($request) {
                 }
             } 
         }
-        if( is_null($subCat) || $categorie != $subCat ) continue;
-
-        //if(get_field('', $post->ID) == false){ continue; }
+        if( !is_null($categorie) ){
+            if( is_null($subCat) || $categorie != $subCat ) continue;
+        } 
+          
         $blocks = parse_blocks($post->post_content);
         $clearBlock = '';
 
@@ -114,9 +114,10 @@ function article_api($request) {
             'teaser' => $teaser,
             'featured_image' => $featured_image,
             'category' => $subCat,
-            'content' => $css_string.$lead.$clearBlock,
+            'content' => $lead.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
             'style' => $css_string,//TO DELETE
+            'content_styled' => $css_string.$lead.$clearBlock,
             //'raw' => parse_blocks($post->post_content), //TO DELETE
             'alternative' => $css_string.$lead.$alternativeRender
         );
