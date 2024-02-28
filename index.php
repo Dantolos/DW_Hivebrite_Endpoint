@@ -9,7 +9,6 @@ Author URI: https://github.com/Dantolos/
 License: GPL2
 */
 
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -114,12 +113,13 @@ function article_api($request) {
             'teaser' => $teaser,
             'featured_image' => $featured_image,
             'category' => $subCat,
+            'lead' => $lead,
             'content' => $lead.$clearBlock,
             //'blocks' => $clearBlock,//TO DELETE
-            'style' => $css_string,//TO DELETE
-            'content_styled' => $css_string.$lead.$clearBlock,
+            //'style' => $css_string,//TO DELETE
+            //'content_styled' => $css_string.$lead.$clearBlock,
             //'raw' => parse_blocks($post->post_content), //TO DELETE
-            'alternative' => $css_string.$lead.$alternativeRender
+            //'alternative' => $css_string.$lead.$alternativeRender
         );
     }
     return rest_ensure_response( $data );

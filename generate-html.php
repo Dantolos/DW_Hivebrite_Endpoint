@@ -5,11 +5,9 @@ namespace DW;
 class generate_html 
 {
      public $htmlBlock;
-
-
+ 
      public function  __construct($block) {
-           $this->create_html_elements($block);
-    
+          $this->create_html_elements($block);
           return  $this->htmlBlock;
      }
      
