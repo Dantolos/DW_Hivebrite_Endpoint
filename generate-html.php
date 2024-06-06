@@ -34,7 +34,8 @@ class generate_html
                case 'core/image':
                $imageURL = wp_get_attachment_image_url($block['attrs']['id'] );
                     $this->htmlBlock .= '<div class="dj-block-image">';
-                    $this->htmlBlock .= '<img src="'.$imageURL.'" />';
+                    //$this->htmlBlock .= '<img src="'.$imageURL.'" />';
+                    $this->htmlBlock .= $block['innerHTML'];
                     $this->htmlBlock .= '</div>';
                     break;
           
