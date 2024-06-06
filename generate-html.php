@@ -43,11 +43,11 @@ class generate_html
                case 'core/list':
                     $this->htmlBlock .= '<div class="dj-block-list">';
                     //$this->htmlBlock .= $block['innerHTML'];
-                    $this->htmlBlock .= '<ul>';
-                    $this->htmlBlock .= 'LIST';
-
-                    foreach($block['innerHTML'] as $listItem){
-                         $this->htmlBlock .= $listItem['innerHTML'];
+                    $this->htmlBlock .= '<ul>'; 
+                    if(is_array($block['innerBlocks']) || is_object($block['innerBlocks'])){
+                         foreach($block['innerBlocks'] as $listItem){
+                              $this->htmlBlock .= $listItem['innerHTML'];
+                         }
                     }
                     $this->htmlBlock .= '</ul>';
                     $this->htmlBlock .= '</div>';
