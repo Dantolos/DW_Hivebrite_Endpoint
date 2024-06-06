@@ -42,7 +42,13 @@ class generate_html
                //List
                case 'core/list':
                     $this->htmlBlock .= '<div class="dj-block-list">';
-                    $this->htmlBlock .= $block['innerHTML'];
+                    //$this->htmlBlock .= $block['innerHTML'];
+                    $this->htmlBlock .= '<ul>';
+                    foreach($block['innerHTML'] as $listItem){
+                         $this->htmlBlock .= $listItem['innerHTML'];
+                    }
+                    $this->htmlBlock .= '</ul>';
+                     
                     $this->htmlBlock .= '</div>';
                     break;
           
